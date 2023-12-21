@@ -4,7 +4,7 @@ from table import Table
 
 pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT + 80))
 pygame.display.set_caption("Pacman")
 
 class Main:

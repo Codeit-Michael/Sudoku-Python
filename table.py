@@ -25,5 +25,19 @@ class Table:
 				self.table_cells.append(Cell(x, y, CELL_SIZE, self.answerable_table[y][x]))
 
 
+	def _draw_grid(self):
+		grid_color = (50, 80, 80)
+		pygame.draw.rect(self.screen, grid_color, (-3, -3, WIDTH + 6, HEIGHT + 6), 6)
+
+		i = 1
+		while (i * CELL_SIZE[0]) < WIDTH:
+			line_size = 2 if i % 3 > 0 else 4
+			pygame.draw.line(self.screen, grid_color, ((i * CELL_SIZE[0]) - (line_size // 2), 0), ((i * CELL_SIZE[0]) - (line_size // 2), HEIGHT), line_size)
+			pygame.draw.line(self.screen, grid_color, (0, (i * CELL_SIZE[0]) - (line_size // 2)), (HEIGHT, (i * CELL_SIZE[0]) - (line_size // 2)), line_size)
+			i += 1
+
+
 	def update(self):
 		[cell.update(self.screen) for cell in self.table_cells]
+
+		self._draw_grid()
