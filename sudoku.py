@@ -3,9 +3,9 @@ import math
 import copy
 
 class Sudoku:
-	def __init__(self, N, K):
+	def __init__(self, N, E):
 		self.N = N
-		self.K = K
+		self.E = E
 
 		# compute square root of N
 		self.SRN = int(math.sqrt(N))
@@ -90,7 +90,7 @@ class Sudoku:
 		return False
 
 	def remove_digits(self):
-		count = self.K
+		count = self.E
 
 		# replicates the table so we can have a filled and pre-filled copy
 		self.answerable_table = copy.deepcopy(self.table)
@@ -128,6 +128,6 @@ class Sudoku:
 # Driver code
 if __name__ == "__main__":
 	N = 9
-	K = (N * N) // 2
-	sudoku = Sudoku(N, K)
+	E = (N * N) // 2
+	sudoku = Sudoku(N, E)
 	sudoku.printSudoku()

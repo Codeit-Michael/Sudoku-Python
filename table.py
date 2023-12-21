@@ -8,7 +8,8 @@ class Table:
 	def __init__(self, screen):
 		self.screen = screen
 
-		puzzle = Sudoku(N_CELLS, (N_CELLS * N_CELLS) // 2)
+		# E = table length (get by multiplying number of rows and cols) minus squared value of row/col length
+		puzzle = Sudoku(N_CELLS, E=(N_CELLS * N_CELLS) - (N_CELLS * 2))
 
 		self.table = puzzle.puzzle_answers()
 		self.answerable_table = puzzle.puzzle_table()
@@ -21,7 +22,7 @@ class Table:
 	def _generate_game(self):
 		for y in range(N_CELLS):
 			for x in range(N_CELLS):
-				self.table_cells.append(Cell(x, y, CELL_SIZE))
+				self.table_cells.append(Cell(x, y, CELL_SIZE, self.answerable_table[y][x]))
 
 
 	def update(self):
