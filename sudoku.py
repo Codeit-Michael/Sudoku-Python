@@ -104,6 +104,13 @@ class Sudoku:
 				self.answerable_table[row][col] = 0
 
 
+	def puzzle_table(self):
+		return self.answerable_table
+
+	def puzzle_answers(self):
+		return self.table
+
+
 	def printSudoku(self):
 		for row in range(self.N):
 			for col in range(self.N):

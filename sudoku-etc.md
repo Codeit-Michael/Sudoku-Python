@@ -25,10 +25,11 @@
 	Requirements
 	- Pygame
 		Parts
-		- cell
-		- table
-			- subgroups
-		- puzz generator
+		- cell 				-
+		- table 				-
+			- subgroups		-
+		- puzz generator	/
+		- nav					-
 	Approach
 	ERV
 	Pseudo
@@ -37,8 +38,22 @@
 
 
 `~~~~~~~`
+
 ## Sudoku Generator Algorithm
 1. Fill all the diagonal 3x3 matrices.
 2. Fill recursively rest of the non-diagonal matrices. For every cell to be filled, we try all numbers until we find a safe number to be placed.  
 3. Once matrix is fully filled, remove K elements
    randomly to complete game.
+
+`~~~~~~~~~~`
+
+## Hierarchy
+```txt
+
+<Main>----(Table)---------------
+			  /   \			|       \
+		[sudoku]	[cell] [nav]	 [UI]
+
+```
+- Main() runs the entire app
+- Table() contains the subgroups, access the sudoku() (generator) and each cell(), handles the nav and so as the UI

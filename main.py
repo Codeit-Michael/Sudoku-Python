@@ -1,6 +1,6 @@
 import pygame, sys
 from settings import WIDTH, HEIGHT
-# from table import Table
+from table import Table
 
 pygame.init()
 
@@ -13,14 +13,15 @@ class Main:
 		self.FPS = pygame.time.Clock()
 
 	def main(self):
-		while True:
-			self.screen.fill("white")
+		table = Table(self.screen)
 
+		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					pygame.quit()
 					sys.exit()
 
+			table.update()
 			pygame.display.update()
 			self.FPS.tick(30)
 
