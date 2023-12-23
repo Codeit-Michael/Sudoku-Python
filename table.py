@@ -37,8 +37,36 @@ class Table:
 			i += 1
 
 
+	def get_cell_from_pos(self, pos):
+		for cell in self.table_cells:
+			if (cell.row, cell.col) == (pos[0], pos[1]):
+				return cell
+
+
 	def handle_click(self, pos):
-		return print(pos)
+		x, y = pos[0], pos[-1]
+		if x <= WIDTH and y <= HEIGHT:
+			x = x // CELL_SIZE[0]
+			y = y // CELL_SIZE[1]
+			clicked_cell = self.get_cell_from_pos((x, y))
+			print(clicked_cell.value)
+
+		else:
+			print(False)
+
+		# if self.selected_piece is None:
+		# 	if clicked_cell.occupying_piece is not None:
+		# 		if clicked_cell.occupying_piece.color == self.turn:
+		# 			self.selected_piece = clicked_cell.occupying_piece
+		# elif self.selected_piece._move(clicked_cell):
+		# 	if not self.is_jump:
+		# 		self.turn = 'red' if self.turn == 'black' else 'black'
+		# 	else:
+		# 		if len(clicked_cell.occupying_piece.valid_jumps()) == 0:
+		# 			self.turn = 'red' if self.turn == 'black' else 'black'
+		# elif clicked_cell.occupying_piece is not None:
+		# 	if clicked_cell.occupying_piece.color == self.turn:
+		# 		self.selected_piece = clicked_cell.occupying_piece
 
 
 	def update(self):
