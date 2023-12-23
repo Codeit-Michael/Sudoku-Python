@@ -54,20 +54,6 @@ class Table:
 		else:
 			print(False)
 
-		# if self.selected_piece is None:
-		# 	if clicked_cell.occupying_piece is not None:
-		# 		if clicked_cell.occupying_piece.color == self.turn:
-		# 			self.selected_piece = clicked_cell.occupying_piece
-		# elif self.selected_piece._move(clicked_cell):
-		# 	if not self.is_jump:
-		# 		self.turn = 'red' if self.turn == 'black' else 'black'
-		# 	else:
-		# 		if len(clicked_cell.occupying_piece.valid_jumps()) == 0:
-		# 			self.turn = 'red' if self.turn == 'black' else 'black'
-		# elif clicked_cell.occupying_piece is not None:
-		# 	if clicked_cell.occupying_piece.color == self.turn:
-		# 		self.selected_piece = clicked_cell.occupying_piece
-
 
 	def update(self):
 		[cell.update(self.screen) for cell in self.table_cells]
