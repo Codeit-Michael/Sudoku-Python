@@ -37,6 +37,10 @@ class Table:
 			i += 1
 
 
+	def handle_click(self, pos):
+		return print(pos)
+
+
 	def update(self):
 		[cell.update(self.screen) for cell in self.table_cells]
 

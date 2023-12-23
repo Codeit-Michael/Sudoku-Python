@@ -20,6 +20,8 @@ class Main:
 				if event.type == pygame.QUIT:
 					pygame.quit()
 					sys.exit()
+				if event.type == pygame.MOUSEBUTTONDOWN:
+					table.handle_click(event.pos)
 
 			table.update()
 			pygame.display.update()
