@@ -44,7 +44,7 @@ class Table:
 
 
 	def handle_click(self, pos):
-		x, y = pos[0], pos[-1]
+		x, y = pos[0], pos[1]
 		if x <= WIDTH and y <= HEIGHT:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
@@ -52,7 +52,14 @@ class Table:
 			print(clicked_cell.value)
 
 		else:
-			print(False)
+			pass
+			# print(False)
+
+
+	def _get_key_clicked(self, num):
+		if num != None:
+			print(num)
+		# other way, using.get_pressed to and manually iddentifying if any of the number keys where clicked
 
 
 	def update(self):

@@ -50,10 +50,45 @@
 ## Hierarchy
 ```txt
 
-<Main>----(Table)---------------
+<Main>----(Table)-------,-------
 			  /   \			|       \
 		[sudoku]	[cell] [nav]	 [UI]
 
 ```
 - Main() runs the entire app
 - Table() contains the subgroups, access the sudoku() (generator) and each cell(), handles the nav and so as the UI
+
+`~~~~~~~~~~`
+
+Move Execution
+```txt
+# pseudo
+
+if clicked a cell:
+	cell_coor = (cell.row, cell.col)
+	cell_answer = get_cell_from_pos(table, cell_coor)
+	if cell.value == 0 or cell.value != cell_answer.value:
+		keys = pygame.key.get_pressed()
+
+		if self.guess_mode == True and keys.unicode not in cell.guesses:
+			cell.guesses.append(keys.unicode)
+
+		elif self.guess_mode == False and cell.value == 0:
+			cell.value = keys.unicode
+
+```
+	def player_move(self):
+		keys = pygame.key.get_pressed()
+
+		if keys[pygame.K_a] and not self.game_over or keys[pygame.K_LEFT] and not self.game_over:
+			if self.player.sprite.rect.left > 0:
+				self.player.sprite.move_left()
+		elif keys[pygame.K_d] and not self.game_over or keys[pygame.K_RIGHT] and not self.game_over:
+			if self.player.sprite.rect.right < WIDTH:
+				self.player.sprite.move_right()
+		elif keys[pygame.K_w] and not self.game_over or keys[pygame.K_UP] and not self.game_over:
+			if self.player.sprite.rect.top > 0:
+				self.player.sprite.move_up()		
+		elif keys[pygame.K_s] and not self.game_over or keys[pygame.K_DOWN] and not self.game_over:
+			if self.player.sprite.rect.bottom < HEIGHT:
+				self.player.sprite.move_bottom()
