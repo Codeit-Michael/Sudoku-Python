@@ -13,14 +13,12 @@ class Cell:
 		self.abs_y = col * self.height
 		
 		self.value = value
-
 		self.is_correct_guess = True
+		self.guesses = None if self.value != 0 else []
 
 		self.color = pygame.Color("white")
 		self.font_color = pygame.Color("black") if self.is_correct_guess else pygame.Color("red")
 		self.font = pygame.font.SysFont('monospace', self.cell_size[0])
-
-		self.guesses = None if self.value != 0 else []
 
 		self.rect = pygame.Rect(self.abs_x,self.abs_y,self.width,self.height)
 

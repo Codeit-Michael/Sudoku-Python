@@ -22,17 +22,17 @@ class Main:
 					pygame.quit()
 					sys.exit()
 				if event.type == pygame.MOUSEBUTTONDOWN:
-					table.handle_click(event.pos)
+					table.handle_mouse_click(event.pos)
 
 				# key clicks could be this way or through .get_pressed and idetify each one of them
-				if event.type == pygame.KEYDOWN:
-					try:
-						if int(event.unicode) >= 0 or int(event.unicode) <= 9:
-							clicked_num = event.unicode
-					except:
-						pass
+			# 	if event.type == pygame.KEYDOWN:
+			# 		try:
+			# 			if int(event.unicode) >= 0 or int(event.unicode) <= 9:
+			# 				clicked_num = event.unicode
+			# 		except:
+			# 			pass
 
-			table._get_key_clicked(clicked_num)
+			# table._get_key_clicked(clicked_num)
 			table.update()
 			pygame.display.update()
 			self.FPS.tick(30)

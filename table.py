@@ -15,6 +15,9 @@ class Table:
 		self.answerable_table = puzzle.puzzle_table()
 
 		self.table_cells = []
+		self.clicked_cell = None
+		self.making_move = False
+		self.guess_mode = True
 
 		self._generate_game()
 
@@ -43,23 +46,29 @@ class Table:
 				return cell
 
 
-	def handle_click(self, pos):
+	def handle_mouse_click(self, pos):
 		x, y = pos[0], pos[1]
+
 		if x <= WIDTH and y <= HEIGHT:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
 			clicked_cell = self.get_cell_from_pos((x, y))
-			print(clicked_cell.value)
+			if clicked_cell.value == 0:
+				self.clicked_cell = clicked_cell
+				self.making_move = True
 
-		else:
-			pass
-			# print(False)
+		# `````PSEUDO`````
+		# if clicked_nums_below and self.clicked_cell != None:
+		# 	if self.guess_mode:
+		# 		self.clicked_cell.value = clicked_nums_below.value
+		# 	else:
+		# 		self.clicked_cell.guesses.append(clicked_nums_below.value)
+		# 	self.clicked_cell = None
+		# 	self.making_move = False
 
-
-	def _get_key_clicked(self, num):
-		if num != None:
-			print(num)
-		# other way, using.get_pressed to and manually iddentifying if any of the number keys where clicked
+		# `````PSEUDO`````
+		# if clicked_modes_below: # guess mode on/off, erase
+		# 	execute_modes_below()
 
 
 	def update(self):
