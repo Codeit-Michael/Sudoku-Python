@@ -4,6 +4,8 @@ from sudoku import Sudoku
 
 from settings import WIDTH, HEIGHT, N_CELLS, CELL_SIZE
 
+pygame.font.init()
+
 class Table:
 	def __init__(self, screen):
 		self.screen = screen
@@ -21,6 +23,11 @@ class Table:
 		self.making_move = False
 		self.guess_mode = True
 
+		self.delete_button = pygame.Rect(0, (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
+		self.guess_button = pygame.Rect((CELL_SIZE[0] * 3), (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
+		self.font = pygame.font.SysFont('Bauhaus 93', (CELL_SIZE[0] // 2))
+		self.font_color = pygame.Color("white")
+	
 		self._generate_game()
 
 
@@ -49,6 +56,19 @@ class Table:
 			i += 1
 
 
+	def draw_buttons(self):
+		# adding delete button details
+		dl_button_color = pygame.Color("red")
+		pygame.draw.rect(self.screen, dl_button_color, self.delete_button)
+		del_msg = self.font.render("Delete", True, self.font_color)
+		self.screen.blit(del_msg, (self.delete_button.x, self.delete_button.y))
+		# adding guess button details
+		gss_button_color = pygame.Color("blue") if self.guess_mode else pygame.Color("purple")
+		pygame.draw.rect(self.screen, gss_button_color, self.guess_button)
+		gss_msg = self.font.render("Guess: On" if self.guess_mode else "Guess: Off", True, self.font_color)
+		self.screen.blit(gss_msg, (self.guess_button.x, self.guess_button.y))
+
+
 	def get_cell_from_pos(self, pos):
 		for cell in self.table_cells:
 			if (cell.row, cell.col) == (pos[0], pos[1]):
@@ -66,9 +86,13 @@ class Table:
 			if clicked_cell.value == 0:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
-		elif x <= WIDTH and y > HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
+		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
 			x = x // CELL_SIZE[0]
 			self.clicked_num_below = self.num_choices[x].value
+		elif x >= (CELL_SIZE[0] * 3) and x <= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
+			self.guess_mode = True if not self.guess_mode else False
+
+		# self.guess_button = pygame.Rect(, (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
 
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
 			# print(self.clicked_num_below)
@@ -100,3 +124,4 @@ class Table:
 		[num.update(self.screen) for num in self.num_choices]
 
 		self._draw_grid()
+		self.draw_buttons()
