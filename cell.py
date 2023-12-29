@@ -3,7 +3,7 @@ import pygame
 pygame.font.init()
 
 class Cell:
-	def __init__(self, row, col, cell_size, value):
+	def __init__(self, row, col, cell_size, value, is_correct_guess = None):
 		self.row = row
 		self.col = col
 		self.cell_size = cell_size
@@ -13,11 +13,10 @@ class Cell:
 		self.abs_y = col * self.height
 		
 		self.value = value
-		self.is_correct_guess = True
-		self.guesses = None if self.value != 0 else []
+		self.is_correct_guess = is_correct_guess
+		self.guesses = None if self.value != 0 else [0 for x in range(9)]
 
 		self.color = pygame.Color("white")
-		self.font_color = pygame.Color("black") if self.is_correct_guess else pygame.Color("red")
 		self.font = pygame.font.SysFont('monospace', self.cell_size[0])
 
 		self.rect = pygame.Rect(self.abs_x,self.abs_y,self.width,self.height)
@@ -27,5 +26,6 @@ class Cell:
 		pygame.draw.rect(screen, self.color, self.rect)
 		
 		if self.value != 0:
-			num_val = self.font.render(str(self.value), True, self.font_color)
+			font_color = pygame.Color("black") if self.is_correct_guess else pygame.Color("red")
+			num_val = self.font.render(str(self.value), True, font_color)
 			screen.blit(num_val, (self.abs_x, self.abs_y))

@@ -77,18 +77,44 @@ if clicked a cell:
 			cell.value = keys.unicode
 
 ```
-	def player_move(self):
-		keys = pygame.key.get_pressed()
 
-		if keys[pygame.K_a] and not self.game_over or keys[pygame.K_LEFT] and not self.game_over:
-			if self.player.sprite.rect.left > 0:
-				self.player.sprite.move_left()
-		elif keys[pygame.K_d] and not self.game_over or keys[pygame.K_RIGHT] and not self.game_over:
-			if self.player.sprite.rect.right < WIDTH:
-				self.player.sprite.move_right()
-		elif keys[pygame.K_w] and not self.game_over or keys[pygame.K_UP] and not self.game_over:
-			if self.player.sprite.rect.top > 0:
-				self.player.sprite.move_up()		
-		elif keys[pygame.K_s] and not self.game_over or keys[pygame.K_DOWN] and not self.game_over:
-			if self.player.sprite.rect.bottom < HEIGHT:
-				self.player.sprite.move_bottom()
+`~~~~~~~~~~`
+
+To Plan
+
+### Table()
+- click_nums_below
+- modes() method (guess_mode on/off)
+	~ toggle button - if on and clicked; off, if off and clicked; on
+	~ if on; cell.guesses[num - 1] = num
+	~ if off and clicked_cell.value != 0; cell.value = num, cell.guesses.clear()
+- erase() method
+	~ if cell.value != 0 and not cell.is_correct_guess; cell.value = 0
+
+### Cell()
+- display guesses
+	~ if cell.value == 0; blit cell.guesses
+	~ elif cell.value != 0; blit cell.value
+- font color for different guessing mode
+	~ if cell.value != 0 and not cell.is_correct_guess; font_color = pygame.Color("red")
+	~ if len(cell.guesses) > 0;
+		font_color = pygame.Color("gray") 
+		font_size = cell_size // 3
+		text_direction (different for each guess)
+			for  num in cell.guesses:
+				text_dir = abs_x + (font_size * num), 
+
+`~~~~~~~~~~`
+
+### Adding Guesses on guess value list (specific for each tile)
+```python
+
+gv = [0,0,3,4,0,0,7,8,0]
+
+for x in range(len(gv)):
+	if gv[x] == 0:
+		gv[x] = x +1
+
+print(gv)
+
+```
