@@ -1,4 +1,5 @@
 import pygame
+import math
 from cell import Cell
 from sudoku import Sudoku
 
@@ -11,10 +12,11 @@ class Table:
 		self.screen = screen
 
 		# E = table length (get by multiplying number of rows and cols) minus squared value of row/col length
-		puzzle = Sudoku(N_CELLS, (N_CELLS * N_CELLS) // 2) # E=(N_CELLS * N_CELLS) - (N_CELLS * 2))
+		self.puzzle = Sudoku(N_CELLS, (N_CELLS * N_CELLS) // 2) # E=(N_CELLS * N_CELLS) - (N_CELLS * 2))
 
-		self.table = puzzle.puzzle_answers()
-		self.answerable_table = puzzle.puzzle_table()
+		self.table = self.puzzle.puzzle_answers()
+		self.answerable_table = self.puzzle.puzzle_table()
+		self.SRN = self.puzzle.SRN
 
 		self.table_cells = []
 		self.num_choices = []
@@ -42,6 +44,8 @@ class Table:
 		# generating number choices
 		for x in range(N_CELLS):
 			self.num_choices.append(Cell(x, N_CELLS, CELL_SIZE, x + 1))
+
+		print(self.puzzle.printSudoku())
 
 
 	def _draw_grid(self):
@@ -75,10 +79,31 @@ class Table:
 				return cell
 
 
+	# checking rows, cols, and subgroups
+	def not_in_row(self, row, num):
+		for col in range(N_CELLS):
+			if self.answerable_table[row][col] == num:
+				return False
+		return True
+	
+	def not_in_col(self, col, num):
+		for row in range(N_CELLS):
+			if self.answerable_table[row][col] == num:
+				return False
+		return True
+
+	def not_in_subgroup(self, rowstart, colstart, num):
+		for y in range(self.SRN):
+			for x in range(self.SRN):
+				if self.answerable_table[rowstart + x][colstart + y] == num:
+					return False
+		return True
+
+
 	def handle_mouse_click(self, pos):
 		x, y = pos[0], pos[1]
 
-		# handling clicks
+		# getting table cell clicked
 		if x <= WIDTH and y <= HEIGHT:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
@@ -86,36 +111,42 @@ class Table:
 			if clicked_cell.value == 0:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
+		# getting number selected
 		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
 			x = x // CELL_SIZE[0]
 			self.clicked_num_below = self.num_choices[x].value
+		# selecting modes
 		elif x >= (CELL_SIZE[0] * 3) and x <= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
 			self.guess_mode = True if not self.guess_mode else False
 
-		# self.guess_button = pygame.Rect(, (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
 
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
-			# print(self.clicked_num_below)
-			# if self.guess_mode:
-			# 	if self.clicked_num_below not in same row/col and clicked_num_below not in self.clicked_cell.guesses:
-			# 		self.clicked_cell.guesses.[self.clicked_num_below - 1] = self.clicked_num_below
-			# else:
-			self.clicked_cell.value = self.clicked_num_below
-			if self.clicked_num_below == self.table[self.clicked_cell.col][self.clicked_cell.row]:
-				print(self.table[self.clicked_cell.col][self.clicked_cell.row], True)
-				self.clicked_cell.is_correct_guess = True
+			if self.guess_mode:
+				# checking the vertical group, the horizontal group, and the subgroup
+				if self.not_in_row(self.clicked_cell.row, self.clicked_num_below):
+					# print("Row True")
+					if self.not_in_col(self.clicked_cell.col, self.clicked_num_below):
+						# print("Col True")				
+						if self.not_in_subgroup(self.clicked_cell.row - self.clicked_cell.row % self.SRN, self.clicked_cell.col - self.clicked_cell.col % self.SRN, self.clicked_num_below):
+							self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
+							print(self.clicked_cell.guesses)
+						else:
+							print(self.clicked_cell.row - self.clicked_cell.row % self.SRN, self.clicked_cell.col - self.clicked_cell.col % self.SRN, False)
 			else:
-				print(self.table[self.clicked_cell.col][self.clicked_cell.row], False)
-				self.clicked_cell.is_correct_guess = False
+				self.clicked_cell.value = self.clicked_num_below
+				if self.clicked_num_below == self.table[self.clicked_cell.col][self.clicked_cell.row]:
+					# print(self.table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row), True)
+					self.clicked_cell.is_correct_guess = True
+					self.answerable_table[self.clicked_cell.col][self.clicked_cell.row] = self.clicked_num_below
+					print(self.answerable_table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row))
+				else:
+					print(self.table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row), False)
+					self.clicked_cell.is_correct_guess = False
 			self.clicked_num_below = None
 			self.clicked_cell = None
 			self.making_move = False
 		else:
 			self.clicked_num_below = None
-
-		# `````PSEUDO`````
-		# if clicked_modes_below: # guess mode on/off, erase
-		# 	execute_modes_below()
 
 
 	def update(self):
