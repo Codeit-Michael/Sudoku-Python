@@ -103,6 +103,27 @@ class Table:
 		return True
 
 
+	# remove numbers in guess if number already guessed in the same row, col, subgroup correctly
+	def remove_guessed_num(self, row, col, rowstart, colstart, num):
+		for cell in self.table_cells:
+			if cell.row == row and cell.guesses != None:
+				for x_idx,guess_row_val in enumerate(cell.guesses):
+					if guess_row_val == num:
+						cell.guesses[x_idx] = 0
+			if cell.col == col and cell.guesses != None:
+				for y_idx,guess_col_val in enumerate(cell.guesses):
+					if guess_col_val == num:
+						cell.guesses[y_idx] = 0
+
+		for x in range(self.SRN):
+			for y in range(self.SRN):
+				current_cell = self.get_cell_from_pos((rowstart + x, colstart + y))
+				if current_cell.guesses != None:
+					for idx,guess_val in enumerate(current_cell.guesses):
+						if guess_val == num:
+							current_cell.guesses[idx] = 0
+
+
 	def handle_mouse_click(self, pos):
 		x, y = pos[0], pos[1]
 
@@ -124,20 +145,26 @@ class Table:
 
 
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
+			current_row = self.clicked_cell.row
+			current_col = self.clicked_cell.col
+			rowstart = self.clicked_cell.row - self.clicked_cell.row % self.SRN
+			colstart = self.clicked_cell.col - self.clicked_cell.col % self.SRN
 			if self.guess_mode:
 				# checking the vertical group, the horizontal group, and the subgroup
-				if self.not_in_row(self.clicked_cell.row, self.clicked_num_below) and self.not_in_col(self.clicked_cell.col, self.clicked_num_below):		
-					rowstart = self.clicked_cell.row - self.clicked_cell.row % self.SRN
-					colstart = self.clicked_cell.col - self.clicked_cell.col % self.SRN
+				if self.not_in_row(current_row, self.clicked_num_below) and self.not_in_col(current_col, self.clicked_num_below):		
+				# if self.not_in_row_and_col(self.clicked_cell.row, self.clicked_cell.col, self.clicked_num_below):		
+					
 					if self.not_in_subgroup(rowstart, colstart, self.clicked_num_below):
 						self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
 			else:
 				self.clicked_cell.value = self.clicked_num_below
-				self.clicked_cell.guesses = [0 for x in range(9)]
 				if self.clicked_num_below == self.table[self.clicked_cell.col][self.clicked_cell.row]:
 					self.clicked_cell.is_correct_guess = True
+					self.clicked_cell.guesses = None
+					self.remove_guessed_num(current_row, current_col, rowstart, colstart, self.clicked_num_below)
 				else:
 					self.clicked_cell.is_correct_guess = False
+					self.clicked_cell.guesses = [0 for x in range(9)]
 			self.clicked_num_below = None
 			self.clicked_cell = None
 			self.making_move = False
