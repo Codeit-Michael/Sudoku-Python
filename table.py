@@ -45,7 +45,7 @@ class Table:
 		for x in range(N_CELLS):
 			self.num_choices.append(Cell(x, N_CELLS, CELL_SIZE, x + 1))
 
-		print(self.puzzle.printSudoku())
+		# self.puzzle.printSudoku()
 
 
 	def _draw_grid(self):
@@ -79,23 +79,26 @@ class Table:
 				return cell
 
 
-	# checking rows, cols, and subgroups
+	# checking rows, cols, and subgroups for adding guesses on each cell
 	def not_in_row(self, row, num):
-		for col in range(N_CELLS):
-			if self.answerable_table[row][col] == num:
-				return False
+		for cell in self.table_cells:
+			if cell.row == row:
+				if cell.value == num:
+					return False
 		return True
 	
 	def not_in_col(self, col, num):
-		for row in range(N_CELLS):
-			if self.answerable_table[row][col] == num:
-				return False
+		for cell in self.table_cells:
+			if cell.col == col:
+				if cell.value == num:
+					return False
 		return True
 
 	def not_in_subgroup(self, rowstart, colstart, num):
-		for y in range(self.SRN):
-			for x in range(self.SRN):
-				if self.answerable_table[rowstart + x][colstart + y] == num:
+		for x in range(self.SRN):
+			for y in range(self.SRN):
+				current_cell = self.get_cell_from_pos((rowstart + x, colstart + y))
+				if current_cell.value == num:
 					return False
 		return True
 
@@ -123,24 +126,17 @@ class Table:
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
 			if self.guess_mode:
 				# checking the vertical group, the horizontal group, and the subgroup
-				if self.not_in_row(self.clicked_cell.row, self.clicked_num_below):
-					# print("Row True")
-					if self.not_in_col(self.clicked_cell.col, self.clicked_num_below):
-						# print("Col True")				
-						if self.not_in_subgroup(self.clicked_cell.row - self.clicked_cell.row % self.SRN, self.clicked_cell.col - self.clicked_cell.col % self.SRN, self.clicked_num_below):
-							self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
-							print(self.clicked_cell.guesses)
-						else:
-							print(self.clicked_cell.row - self.clicked_cell.row % self.SRN, self.clicked_cell.col - self.clicked_cell.col % self.SRN, False)
+				if self.not_in_row(self.clicked_cell.row, self.clicked_num_below) and self.not_in_col(self.clicked_cell.col, self.clicked_num_below):		
+					rowstart = self.clicked_cell.row - self.clicked_cell.row % self.SRN
+					colstart = self.clicked_cell.col - self.clicked_cell.col % self.SRN
+					if self.not_in_subgroup(rowstart, colstart, self.clicked_num_below):
+						self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
 			else:
 				self.clicked_cell.value = self.clicked_num_below
+				self.clicked_cell.guesses = [0 for x in range(9)]
 				if self.clicked_num_below == self.table[self.clicked_cell.col][self.clicked_cell.row]:
-					# print(self.table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row), True)
 					self.clicked_cell.is_correct_guess = True
-					self.answerable_table[self.clicked_cell.col][self.clicked_cell.row] = self.clicked_num_below
-					print(self.answerable_table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row))
 				else:
-					print(self.table[self.clicked_cell.col][self.clicked_cell.row], (self.clicked_cell.col, self.clicked_cell.row), False)
 					self.clicked_cell.is_correct_guess = False
 			self.clicked_num_below = None
 			self.clicked_cell = None
@@ -150,7 +146,7 @@ class Table:
 
 
 	def update(self):
-		[cell.update(self.screen) for cell in self.table_cells]
+		[cell.update(self.screen, self.SRN) for cell in self.table_cells]
 
 		[num.update(self.screen) for num in self.num_choices]
 

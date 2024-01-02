@@ -118,3 +118,37 @@ for x in range(len(gv)):
 print(gv)
 
 ```
+
+`~~~~~~~~~~`
+
+rendering guesses
+```python
+# for 2d list
+for x in range(SRN):
+	for y in range(SRN):
+		if self.guesses[x][y] != 0:
+			abs_x = ((cell_x_size // SRN) * (x + 1)) + x
+			abs_y = ((cell_y_size // SRN) * (y + 1)) + y
+			abs_pos = (abs_x, abs_y)
+			screen.blit(self.guesses[x][y], clr, abs_pos)
+
+```
+
+`~~~~~~~~~~`
+
+subgroup checking
+- using row and col only
+
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+------+------+------
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+------+------+------
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+[][][]|[][][]|[][][]
+
+given = (5, 5)
