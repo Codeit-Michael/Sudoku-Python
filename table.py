@@ -12,7 +12,7 @@ class Table:
 	def __init__(self, screen):
 		self.screen = screen
 
-		self.puzzle = Sudoku(N_CELLS, E=(N_CELLS * N_CELLS) - (N_CELLS * 4))
+		self.puzzle = Sudoku(N_CELLS, (N_CELLS * N_CELLS) // 2)
 		self.clock = Clock()
 
 		self.answers = self.puzzle.puzzle_answers()
@@ -141,7 +141,7 @@ class Table:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
 			# clicked unempty cell but with wrong number guess
-			elif clicked_cell.value != 0 and clicked_cell.value != self.answers[x][y]:
+			elif clicked_cell.value != 0 and clicked_cell.value != self.answers[y][x]:
 				self.cell_to_empty = clicked_cell
 		# getting number selected
 		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
@@ -167,7 +167,8 @@ class Table:
 				# checking the vertical group, the horizontal group, and the subgroup
 				if self._not_in_row(current_row, self.clicked_num_below) and self._not_in_col(current_col, self.clicked_num_below):
 					if self._not_in_subgroup(rowstart, colstart, self.clicked_num_below):
-						self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
+						if self.clicked_cell.guesses != None:
+							self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
 			else:
 				self.clicked_cell.value = self.clicked_num_below
 				if self.clicked_num_below == self.answers[self.clicked_cell.col][self.clicked_cell.row]:
@@ -179,7 +180,7 @@ class Table:
 					self.clicked_cell.guesses = [0 for x in range(9)]
 					self.lives -= 1
 			self.clicked_num_below = None
-			self.clicked_cell = None
+			# self.clicked_cell = None
 			self.making_move = False
 		else:
 			self.clicked_num_below = None
