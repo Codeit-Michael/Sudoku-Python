@@ -22,6 +22,7 @@ class Table:
 		self.num_choices = []
 		self.clicked_cell = None
 		self.clicked_num_below = None
+		self.cell_to_empty = None
 		self.making_move = False
 		self.guess_mode = True
 
@@ -132,9 +133,13 @@ class Table:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
 			clicked_cell = self.get_cell_from_pos((x, y))
+			# clicked empty cell
 			if clicked_cell.value == 0:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
+			# clicked unempty cell but with wrong number guess
+			elif clicked_cell.value != 0 and clicked_cell.value != self.table[x][y]:
+				self.cell_to_empty = clicked_cell
 		# getting number selected
 		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
 			x = x // CELL_SIZE[0]
@@ -142,6 +147,11 @@ class Table:
 		# selecting modes
 		elif x >= (CELL_SIZE[0] * 3) and x <= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
 			self.guess_mode = True if not self.guess_mode else False
+		# deleting numbers
+		elif x <= (CELL_SIZE[0] * 3) and y >= (HEIGHT + CELL_SIZE[1]):
+			if self.cell_to_empty:
+				self.cell_to_empty.value = 0
+				self.cell_to_empty = None
 
 
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
