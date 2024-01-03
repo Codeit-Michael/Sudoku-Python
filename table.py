@@ -2,6 +2,7 @@ import pygame
 import math
 from cell import Cell
 from sudoku import Sudoku
+from clock import Clock
 
 from settings import WIDTH, HEIGHT, N_CELLS, CELL_SIZE
 
@@ -12,9 +13,10 @@ class Table:
 		self.screen = screen
 
 		# E = table length (get by multiplying number of rows and cols) minus squared value of row/col length
-		self.puzzle = Sudoku(N_CELLS, (N_CELLS * N_CELLS) // 2) # E=(N_CELLS * N_CELLS) - (N_CELLS * 2))
+		self.puzzle = Sudoku(N_CELLS, E=(N_CELLS * N_CELLS) - (N_CELLS * 4))
+		self.clock = Clock()
 
-		self.table = self.puzzle.puzzle_answers()
+		self.answers = self.puzzle.puzzle_answers()
 		self.answerable_table = self.puzzle.puzzle_table()
 		self.SRN = self.puzzle.SRN
 
@@ -27,11 +29,12 @@ class Table:
 		self.guess_mode = True
 
 		self.delete_button = pygame.Rect(0, (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
-		self.guess_button = pygame.Rect((CELL_SIZE[0] * 3), (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
+		self.guess_button = pygame.Rect((CELL_SIZE[0] * 6), (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
 		self.font = pygame.font.SysFont('Bauhaus 93', (CELL_SIZE[0] // 2))
 		self.font_color = pygame.Color("white")
 	
 		self._generate_game()
+		self.clock.start_timer()
 
 
 	def _generate_game(self):
@@ -46,8 +49,6 @@ class Table:
 		for x in range(N_CELLS):
 			self.num_choices.append(Cell(x, N_CELLS, CELL_SIZE, x + 1))
 
-		# self.puzzle.printSudoku()
-
 
 	def _draw_grid(self):
 		grid_color = (50, 80, 80)
@@ -61,51 +62,51 @@ class Table:
 			i += 1
 
 
-	def draw_buttons(self):
+	def _draw_buttons(self):
 		# adding delete button details
 		dl_button_color = pygame.Color("red")
 		pygame.draw.rect(self.screen, dl_button_color, self.delete_button)
 		del_msg = self.font.render("Delete", True, self.font_color)
-		self.screen.blit(del_msg, (self.delete_button.x, self.delete_button.y))
+		self.screen.blit(del_msg, (self.delete_button.x + (CELL_SIZE[0] // 2), self.delete_button.y + (CELL_SIZE[1] // 4)))
 		# adding guess button details
 		gss_button_color = pygame.Color("blue") if self.guess_mode else pygame.Color("purple")
 		pygame.draw.rect(self.screen, gss_button_color, self.guess_button)
 		gss_msg = self.font.render("Guess: On" if self.guess_mode else "Guess: Off", True, self.font_color)
-		self.screen.blit(gss_msg, (self.guess_button.x, self.guess_button.y))
+		self.screen.blit(gss_msg, (self.guess_button.x + (CELL_SIZE[0] // 3), self.guess_button.y + (CELL_SIZE[1] // 4)))
 
 
-	def get_cell_from_pos(self, pos):
+	def _get_cell_from_pos(self, pos):
 		for cell in self.table_cells:
 			if (cell.row, cell.col) == (pos[0], pos[1]):
 				return cell
 
 
 	# checking rows, cols, and subgroups for adding guesses on each cell
-	def not_in_row(self, row, num):
+	def _not_in_row(self, row, num):
 		for cell in self.table_cells:
 			if cell.row == row:
 				if cell.value == num:
 					return False
 		return True
 	
-	def not_in_col(self, col, num):
+	def _not_in_col(self, col, num):
 		for cell in self.table_cells:
 			if cell.col == col:
 				if cell.value == num:
 					return False
 		return True
 
-	def not_in_subgroup(self, rowstart, colstart, num):
+	def _not_in_subgroup(self, rowstart, colstart, num):
 		for x in range(self.SRN):
 			for y in range(self.SRN):
-				current_cell = self.get_cell_from_pos((rowstart + x, colstart + y))
+				current_cell = self._get_cell_from_pos((rowstart + x, colstart + y))
 				if current_cell.value == num:
 					return False
 		return True
 
 
 	# remove numbers in guess if number already guessed in the same row, col, subgroup correctly
-	def remove_guessed_num(self, row, col, rowstart, colstart, num):
+	def _remove_guessed_num(self, row, col, rowstart, colstart, num):
 		for cell in self.table_cells:
 			if cell.row == row and cell.guesses != None:
 				for x_idx,guess_row_val in enumerate(cell.guesses):
@@ -118,7 +119,7 @@ class Table:
 
 		for x in range(self.SRN):
 			for y in range(self.SRN):
-				current_cell = self.get_cell_from_pos((rowstart + x, colstart + y))
+				current_cell = self._get_cell_from_pos((rowstart + x, colstart + y))
 				if current_cell.guesses != None:
 					for idx,guess_val in enumerate(current_cell.guesses):
 						if guess_val == num:
@@ -132,26 +133,27 @@ class Table:
 		if x <= WIDTH and y <= HEIGHT:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
-			clicked_cell = self.get_cell_from_pos((x, y))
+			clicked_cell = self._get_cell_from_pos((x, y))
 			# clicked empty cell
 			if clicked_cell.value == 0:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
 			# clicked unempty cell but with wrong number guess
-			elif clicked_cell.value != 0 and clicked_cell.value != self.table[x][y]:
+			elif clicked_cell.value != 0 and clicked_cell.value != self.answers[x][y]:
 				self.cell_to_empty = clicked_cell
 		# getting number selected
 		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
 			x = x // CELL_SIZE[0]
 			self.clicked_num_below = self.num_choices[x].value
-		# selecting modes
-		elif x >= (CELL_SIZE[0] * 3) and x <= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
-			self.guess_mode = True if not self.guess_mode else False
 		# deleting numbers
 		elif x <= (CELL_SIZE[0] * 3) and y >= (HEIGHT + CELL_SIZE[1]):
 			if self.cell_to_empty:
 				self.cell_to_empty.value = 0
 				self.cell_to_empty = None
+		# selecting modes
+		elif x >= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
+			self.guess_mode = True if not self.guess_mode else False
+
 
 
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
@@ -161,17 +163,15 @@ class Table:
 			colstart = self.clicked_cell.col - self.clicked_cell.col % self.SRN
 			if self.guess_mode:
 				# checking the vertical group, the horizontal group, and the subgroup
-				if self.not_in_row(current_row, self.clicked_num_below) and self.not_in_col(current_col, self.clicked_num_below):		
-				# if self.not_in_row_and_col(self.clicked_cell.row, self.clicked_cell.col, self.clicked_num_below):		
-					
-					if self.not_in_subgroup(rowstart, colstart, self.clicked_num_below):
+				if self._not_in_row(current_row, self.clicked_num_below) and self._not_in_col(current_col, self.clicked_num_below):
+					if self._not_in_subgroup(rowstart, colstart, self.clicked_num_below):
 						self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
 			else:
 				self.clicked_cell.value = self.clicked_num_below
-				if self.clicked_num_below == self.table[self.clicked_cell.col][self.clicked_cell.row]:
+				if self.clicked_num_below == self.answers[self.clicked_cell.col][self.clicked_cell.row]:
 					self.clicked_cell.is_correct_guess = True
 					self.clicked_cell.guesses = None
-					self.remove_guessed_num(current_row, current_col, rowstart, colstart, self.clicked_num_below)
+					self._remove_guessed_num(current_row, current_col, rowstart, colstart, self.clicked_num_below)
 				else:
 					self.clicked_cell.is_correct_guess = False
 					self.clicked_cell.guesses = [0 for x in range(9)]
@@ -182,10 +182,28 @@ class Table:
 			self.clicked_num_below = None
 
 
+	def _game_over(self):
+		check = None
+		for cell in self.table_cells:
+			if cell.value == self.answers[cell.col][cell.row]:
+				check = True
+			else:
+				check = False
+				break
+		return check
+
+
 	def update(self):
 		[cell.update(self.screen, self.SRN) for cell in self.table_cells]
 
 		[num.update(self.screen) for num in self.num_choices]
 
 		self._draw_grid()
-		self.draw_buttons()
+		self._draw_buttons()
+
+		if self._game_over():
+			self.clock.stop_timer()
+		else:
+			self.clock.update_timer()
+
+		self.screen.blit(self.clock.display_timer(), (WIDTH // self.SRN,HEIGHT + CELL_SIZE[1]))

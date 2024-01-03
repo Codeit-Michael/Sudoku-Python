@@ -16,7 +16,7 @@ class Main:
 		table = Table(self.screen)
 
 		while True:
-			clicked_num = None
+			self.screen.fill("gray")
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					pygame.quit()
@@ -25,7 +25,7 @@ class Main:
 					table.handle_mouse_click(event.pos)
 
 			table.update()
-			pygame.display.update()
+			pygame.display.flip()
 			self.FPS.tick(30)
 
 
