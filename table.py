@@ -12,7 +12,6 @@ class Table:
 	def __init__(self, screen):
 		self.screen = screen
 
-		# E = table length (get by multiplying number of rows and cols) minus squared value of row/col length
 		self.puzzle = Sudoku(N_CELLS, E=(N_CELLS * N_CELLS) - (N_CELLS * 4))
 		self.clock = Clock()
 
@@ -27,6 +26,9 @@ class Table:
 		self.cell_to_empty = None
 		self.making_move = False
 		self.guess_mode = True
+
+		self.lives = 3
+		self.game_over = False
 
 		self.delete_button = pygame.Rect(0, (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
 		self.guess_button = pygame.Rect((CELL_SIZE[0] * 6), (HEIGHT + CELL_SIZE[1]), (CELL_SIZE[0] * 3), (CELL_SIZE[1]))
@@ -175,6 +177,7 @@ class Table:
 				else:
 					self.clicked_cell.is_correct_guess = False
 					self.clicked_cell.guesses = [0 for x in range(9)]
+					self.lives -= 1
 			self.clicked_num_below = None
 			self.clicked_cell = None
 			self.making_move = False
@@ -182,7 +185,7 @@ class Table:
 			self.clicked_num_below = None
 
 
-	def _game_over(self):
+	def _puzzle_solved(self):
 		check = None
 		for cell in self.table_cells:
 			if cell.value == self.answers[cell.col][cell.row]:
@@ -201,8 +204,9 @@ class Table:
 		self._draw_grid()
 		self._draw_buttons()
 
-		if self._game_over():
+		if self._puzzle_solved() or self.lives == 0:
 			self.clock.stop_timer()
+			self.game_over = True
 		else:
 			self.clock.update_timer()
 

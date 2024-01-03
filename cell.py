@@ -32,7 +32,7 @@ class Cell:
 			num_val = self.font.render(str(self.value), True, font_color)
 			screen.blit(num_val, (self.abs_x, self.abs_y))
 		
-		elif self.value == 0:
+		elif self.value == 0 and self.guesses != None:
 			cv_list = convert_list(self.guesses, [SRN, SRN, SRN])
 			for y in range(SRN):
 				for x in range(SRN):
