@@ -136,33 +136,38 @@ class Table:
 			x = x // CELL_SIZE[0]
 			y = y // CELL_SIZE[1]
 			clicked_cell = self._get_cell_from_pos((x, y))
-			# clicked empty cell
+
+			# if clicked empty cell
 			if clicked_cell.value == 0:
 				self.clicked_cell = clicked_cell
 				self.making_move = True
+
 			# clicked unempty cell but with wrong number guess
 			elif clicked_cell.value != 0 and clicked_cell.value != self.answers[y][x]:
 				self.cell_to_empty = clicked_cell
+
 		# getting number selected
 		elif x <= WIDTH and y >= HEIGHT and y <= (HEIGHT + CELL_SIZE[1]):
 			x = x // CELL_SIZE[0]
 			self.clicked_num_below = self.num_choices[x].value
+
 		# deleting numbers
 		elif x <= (CELL_SIZE[0] * 3) and y >= (HEIGHT + CELL_SIZE[1]) and y <= (HEIGHT + CELL_SIZE[1] * 2):
 			if self.cell_to_empty:
 				self.cell_to_empty.value = 0
 				self.cell_to_empty = None
+
 		# selecting modes
 		elif x >= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]) and y <= (HEIGHT + CELL_SIZE[1] * 2):
 			self.guess_mode = True if not self.guess_mode else False
 
-
-
+		# if making a move
 		if self.clicked_num_below and self.clicked_cell != None and self.clicked_cell.value == 0:
 			current_row = self.clicked_cell.row
 			current_col = self.clicked_cell.col
 			rowstart = self.clicked_cell.row - self.clicked_cell.row % self.SRN
 			colstart = self.clicked_cell.col - self.clicked_cell.col % self.SRN
+
 			if self.guess_mode:
 				# checking the vertical group, the horizontal group, and the subgroup
 				if self._not_in_row(current_row, self.clicked_num_below) and self._not_in_col(current_col, self.clicked_num_below):
@@ -171,16 +176,17 @@ class Table:
 							self.clicked_cell.guesses[self.clicked_num_below - 1] = self.clicked_num_below
 			else:
 				self.clicked_cell.value = self.clicked_num_below
+				# if the player guess correctly
 				if self.clicked_num_below == self.answers[self.clicked_cell.col][self.clicked_cell.row]:
 					self.clicked_cell.is_correct_guess = True
 					self.clicked_cell.guesses = None
 					self._remove_guessed_num(current_row, current_col, rowstart, colstart, self.clicked_num_below)
+				# if guess is wrong
 				else:
 					self.clicked_cell.is_correct_guess = False
 					self.clicked_cell.guesses = [0 for x in range(9)]
 					self.lives -= 1
 			self.clicked_num_below = None
-			# self.clicked_cell = None
 			self.making_move = False
 		else:
 			self.clicked_num_below = None
