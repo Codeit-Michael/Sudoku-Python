@@ -5,7 +5,7 @@ from table import Table
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT + (CELL_SIZE[1] * 3)))
-pygame.display.set_caption("Pacman")
+pygame.display.set_caption("Sudoku")
 
 pygame.font.init()
 

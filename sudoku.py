@@ -125,7 +125,6 @@ class Sudoku:
 			print()
 
 
-# Driver code
 if __name__ == "__main__":
 	N = 9
 	E = (N * N) // 2
