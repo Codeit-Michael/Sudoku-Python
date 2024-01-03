@@ -148,12 +148,12 @@ class Table:
 			x = x // CELL_SIZE[0]
 			self.clicked_num_below = self.num_choices[x].value
 		# deleting numbers
-		elif x <= (CELL_SIZE[0] * 3) and y >= (HEIGHT + CELL_SIZE[1]):
+		elif x <= (CELL_SIZE[0] * 3) and y >= (HEIGHT + CELL_SIZE[1]) and y <= (HEIGHT + CELL_SIZE[1] * 2):
 			if self.cell_to_empty:
 				self.cell_to_empty.value = 0
 				self.cell_to_empty = None
 		# selecting modes
-		elif x >= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]):
+		elif x >= (CELL_SIZE[0] * 6) and y >= (HEIGHT + CELL_SIZE[1]) and y <= (HEIGHT + CELL_SIZE[1] * 2):
 			self.guess_mode = True if not self.guess_mode else False
 
 
